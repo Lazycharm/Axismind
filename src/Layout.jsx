@@ -24,6 +24,7 @@ export default function Layout({ children, currentPageName }) {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [brandLogoUrl, setBrandLogoUrl] = useState("");
   const [userLoaded, setUserLoaded] = useState(false);
 
   const baseNavigationItems = [
@@ -38,6 +39,41 @@ export default function Layout({ children, currentPageName }) {
   // Check if user is admin
   useEffect(() => {
     checkAdminStatus();
+    loadBranding();
+  }, []);
+
+  const applyFavicon = (faviconUrl) => {
+    const targetUrl = faviconUrl || "/favicon.svg";
+    const cacheBustedUrl = `${targetUrl}${targetUrl.includes("?") ? "&" : "?"}v=${Date.now()}`;
+    const links = document.querySelectorAll("link[rel*='icon']");
+    links.forEach((node) => node.remove());
+
+    const link = document.createElement("link");
+    link.rel = "icon";
+    link.type = "image/png";
+    link.href = cacheBustedUrl;
+    document.head.appendChild(link);
+  };
+
+  const loadBranding = async () => {
+    try {
+      const settings = await backend.entities.SiteSettings.list();
+      const logoSetting = settings.find((item) => item.key === "brand_logo_url");
+      const faviconSetting = settings.find((item) => item.key === "brand_favicon_url");
+      setBrandLogoUrl(logoSetting?.value || "");
+      applyFavicon(faviconSetting?.value || "");
+    } catch {
+      setBrandLogoUrl("");
+      applyFavicon("");
+    }
+  };
+
+  useEffect(() => {
+    const handleSettingsUpdated = () => {
+      loadBranding();
+    };
+    window.addEventListener("site-settings-updated", handleSettingsUpdated);
+    return () => window.removeEventListener("site-settings-updated", handleSettingsUpdated);
   }, []);
 
   const checkAdminStatus = async () => {
@@ -234,7 +270,15 @@ export default function Layout({ children, currentPageName }) {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-md opacity-50 group-hover:opacity-75 transition-opacity"></div>
                 <div className="relative w-11 h-11 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                  <Globe className="w-6 h-6 text-white" />
+                  {brandLogoUrl ? (
+                    <img
+                      src={brandLogoUrl}
+                      alt="AxisMind logo"
+                      className="w-8 h-8 object-contain"
+                    />
+                  ) : (
+                    <Globe className="w-6 h-6 text-white" />
+                  )}
                 </div>
               </div>
               <div>
@@ -350,7 +394,15 @@ export default function Layout({ children, currentPageName }) {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-md opacity-40"></div>
                   <div className="relative w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                    <Globe className="w-6 h-6 text-white" />
+                    {brandLogoUrl ? (
+                      <img
+                        src={brandLogoUrl}
+                        alt="AxisMind logo"
+                        className="w-9 h-9 object-contain"
+                      />
+                    ) : (
+                      <Globe className="w-6 h-6 text-white" />
+                    )}
                   </div>
                 </div>
                 <div>

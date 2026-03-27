@@ -1375,6 +1375,8 @@ function SiteImagesManager() {
   const [saving, setSaving] = useState({});
 
   const imageSlots = [
+    { key: 'brand_logo_url', label: 'Brand - Logo (Header & Footer)', section: 'Branding' },
+    { key: 'brand_favicon_url', label: 'Brand - Favicon (Browser Tab Icon)', section: 'Branding' },
     { key: 'about_hero_bg', label: 'About Page - Hero Background', section: 'About' },
     { key: 'about_team_photo', label: 'About Page - Team Photo (Story Section)', section: 'About' },
     { key: 'home_hero_poster', label: 'Home Page - Hero Fallback Image', section: 'Home' },
@@ -1399,6 +1401,7 @@ function SiteImagesManager() {
       setSettings(prev => ({ ...prev, [slot.key]: created }));
     }
     setSaving(prev => ({ ...prev, [slot.key]: false }));
+    window.dispatchEvent(new CustomEvent("site-settings-updated"));
   };
 
   return (
