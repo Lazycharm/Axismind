@@ -102,6 +102,11 @@ export const backend = {
     User: entityApi("User"),
   },
   auth: {
+    signInWithPassword: async ({ email, password }) => {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      return data;
+    },
     me: async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error || !data?.user) {
@@ -126,8 +131,9 @@ export const backend = {
         window.location.href = redirectTo;
       }
     },
-    redirectToLogin: () => {
-      window.location.href = "/Admin";
+    redirectToLogin: (returnTo = window.location.pathname) => {
+      const target = returnTo || "/Admin";
+      window.location.href = `/login?redirect=${encodeURIComponent(target)}`;
     },
   },
   users: {

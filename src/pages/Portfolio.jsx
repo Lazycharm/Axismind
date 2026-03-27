@@ -311,11 +311,10 @@ export default function PortfolioPage() {
                   Start Your Project
                 </Button>
 
-                <Link to={createPageUrl('Services')}>
+                <Link to={createPageUrl('Services')} className="w-full sm:w-auto">
                   <Button
                     size="lg"
-                    variant="outline"
-                    className="border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-xl backdrop-blur-sm"
+                    className="w-full sm:w-auto border-2 border-white/30 bg-white/[0.04] text-white hover:bg-white/[0.14] hover:text-white shadow-none px-8 py-4 rounded-xl backdrop-blur-sm"
                   >
                     View Our Services
                   </Button>
