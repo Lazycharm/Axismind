@@ -7,7 +7,6 @@ import {
   X, 
   MessageCircle, 
   ChevronUp,
-  Globe,
   Mail,
   MapPin,
   Instagram,
@@ -17,6 +16,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { backend } from "@/api/backendClient";
+
+const DEFAULT_LOGO_URL = "/logo.png";
+const DEFAULT_FAVICON_URL = "/logo.png";
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
@@ -43,7 +45,7 @@ export default function Layout({ children, currentPageName }) {
   }, []);
 
   const applyFavicon = (faviconUrl) => {
-    const targetUrl = faviconUrl || "/favicon.svg";
+    const targetUrl = faviconUrl || DEFAULT_FAVICON_URL;
     const cacheBustedUrl = `${targetUrl}${targetUrl.includes("?") ? "&" : "?"}v=${Date.now()}`;
     const links = document.querySelectorAll("link[rel*='icon']");
     links.forEach((node) => node.remove());
@@ -60,10 +62,10 @@ export default function Layout({ children, currentPageName }) {
       const settings = await backend.entities.SiteSettings.list();
       const logoSetting = settings.find((item) => item.key === "brand_logo_url");
       const faviconSetting = settings.find((item) => item.key === "brand_favicon_url");
-      setBrandLogoUrl(logoSetting?.value || "");
+      setBrandLogoUrl(logoSetting?.value || DEFAULT_LOGO_URL);
       applyFavicon(faviconSetting?.value || "");
     } catch {
-      setBrandLogoUrl("");
+      setBrandLogoUrl(DEFAULT_LOGO_URL);
       applyFavicon("");
     }
   };
@@ -260,44 +262,34 @@ export default function Layout({ children, currentPageName }) {
             : "glass border-white/5"
         }`}
       >
-        <nav className="max-w-7xl mx-auto px-6">
-          <div className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? "h-16" : "h-20"}`}>
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? "h-16" : "h-[4.5rem]"}`}>
             {/* Logo - Modern Minimal */}
             <Link 
               to={createPageUrl('Home')} 
-              className="flex items-center space-x-3 group"
+              className="flex items-center gap-2.5 group shrink-0"
             >
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-md opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                <div className="relative w-11 h-11 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                  {brandLogoUrl ? (
-                    <img
-                      src={brandLogoUrl}
-                      alt="AxisMind logo"
-                      className="w-8 h-8 object-contain"
-                    />
-                  ) : (
-                    <Globe className="w-6 h-6 text-white" />
-                  )}
-                </div>
-              </div>
-              <div>
-                <span className="text-xl font-bold text-white tracking-tight">
-                  AxisMind
+              <img
+                src={brandLogoUrl || DEFAULT_LOGO_URL}
+                alt="AxisMind logo"
+                className="w-10 h-10 sm:w-11 sm:h-11 object-contain rounded-xl ring-1 ring-white/10 bg-white/[0.03] p-1.5 group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="flex items-center min-w-0">
+                <span className="text-lg sm:text-[1.35rem] font-extrabold tracking-[0.08em] leading-none whitespace-nowrap uppercase bg-gradient-to-b from-cyan-200 via-blue-200 to-slate-100 bg-clip-text text-transparent [text-shadow:0_1px_10px_rgba(59,130,246,0.28)]">
+                  AXISMIND
                 </span>
-                <div className="text-[10px] text-gray-500 -mt-0.5 tracking-wider uppercase">Digital Growth Agency · UAE</div>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-10">
+            <div className="hidden lg:flex items-center gap-2 xl:gap-6">
               {navigationItems.map((item) => {
                 const ItemIcon = item.icon;
                 return (
                   <Link
                     key={item.name}
                     to={item.url}
-                    className={`text-sm font-medium transition-all duration-300 relative group flex items-center gap-1.5 px-3 py-2 rounded-lg ${
+                    className={`text-sm font-medium transition-all duration-300 relative group flex items-center gap-1.5 px-2 xl:px-3 py-2 rounded-lg whitespace-nowrap ${
                       location.pathname === item.url 
                         ? 'text-blue-400 bg-blue-500/10' 
                         : 'text-gray-300 hover:text-white hover:bg-white/5'
@@ -311,7 +303,7 @@ export default function Layout({ children, currentPageName }) {
               
               <Button
                 onClick={handleWhatsAppClick}
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg shadow-blue-500/20 btn-glow"
+                className="hidden xl:inline-flex bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg shadow-blue-500/20 btn-glow whitespace-nowrap"
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 Get Started
@@ -391,20 +383,11 @@ export default function Layout({ children, currentPageName }) {
             {/* Company Info */}
             <div className="space-y-6">
               <div className="flex items-center space-x-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-md opacity-40"></div>
-                  <div className="relative w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                    {brandLogoUrl ? (
-                      <img
-                        src={brandLogoUrl}
-                        alt="AxisMind logo"
-                        className="w-9 h-9 object-contain"
-                      />
-                    ) : (
-                      <Globe className="w-6 h-6 text-white" />
-                    )}
-                  </div>
-                </div>
+                <img
+                  src={brandLogoUrl || DEFAULT_LOGO_URL}
+                  alt="AxisMind logo"
+                  className="w-12 h-12 object-contain rounded-lg"
+                />
                 <div>
                   <h3 className="text-xl font-bold text-white">AxisMind</h3>
                   <p className="text-xs text-gray-500">Digital Growth Agency · UAE</p>
