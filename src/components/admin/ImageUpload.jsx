@@ -3,7 +3,7 @@ import { backend } from '@/api/backendClient';
 import { Button } from "@/components/ui/button";
 import { Upload, X } from 'lucide-react';
 
-export default function ImageUpload({ value, onChange, label = "Upload Image", className = "" }) {
+export default function ImageUpload({ value, onChange, label = "Upload Image", className = "", helperText = "" }) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -20,10 +20,13 @@ export default function ImageUpload({ value, onChange, label = "Upload Image", c
   return (
     <div className={className}>
       {label && <label className="block text-sm font-medium text-gray-300 mb-2">{label}</label>}
+      {helperText && (
+        <p className="text-xs text-gray-500 mb-2 leading-relaxed">{helperText}</p>
+      )}
       <div className="space-y-3">
         {value && (
-          <div className="relative w-full h-44 rounded-xl overflow-hidden border border-gray-600">
-            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+          <div className="relative w-full h-44 rounded-xl overflow-hidden border border-gray-600 bg-gradient-to-br from-slate-900/80 to-gray-900 flex items-center justify-center p-2">
+            <img src={value} alt="Preview" className="max-w-full max-h-full w-auto h-auto object-contain object-center" />
             <button
               type="button"
               onClick={() => onChange('')}

@@ -8,7 +8,7 @@ import {
   Palette, 
   Home, 
   Settings, 
-  Laptop,
+  Building2,
   MessageCircle,
   Star
 } from 'lucide-react';
@@ -17,7 +17,6 @@ const services = [
   {
     icon: Globe,
     title: "Web Design & Development",
-    price: "AED 699",
     description: "Professional responsive websites that convert visitors into customers. Built with modern technologies and SEO optimized.",
     features: ["Responsive Design", "SEO Optimized", "Admin Panel", "1 Year Support"],
     popular: true,
@@ -26,7 +25,6 @@ const services = [
   {
     icon: Smartphone,
     title: "App Development",
-    price: "Starting AED 2,999",
     description: "Custom mobile apps for iOS and Android. User-friendly interfaces with powerful backend systems.",
     features: ["iOS & Android", "Custom Features", "API Integration", "App Store Submission"],
     color: "purple"
@@ -34,7 +32,6 @@ const services = [
   {
     icon: Palette,
     title: "Logo & Brand Identity",
-    price: "Starting AED 499",
     description: "Complete branding solutions including logo design, business cards, and brand guidelines.",
     features: ["Logo Design", "Brand Guidelines", "Business Cards", "Social Media Kit"],
     color: "orange"
@@ -42,7 +39,6 @@ const services = [
   {
     icon: Home,
     title: "Smart Home Setup",
-    price: "Starting AED 1,299",
     description: "Transform your home with intelligent automation systems for lighting, security, and climate control.",
     features: ["Home Automation", "Security Systems", "Voice Control", "Mobile App Control"],
     color: "green"
@@ -50,18 +46,16 @@ const services = [
   {
     icon: Settings,
     title: "Tech Installations",
-    price: "Starting AED 199",
     description: "Professional installation and setup of networking equipment, security cameras, and smart devices.",
     features: ["Network Setup", "CCTV Installation", "Device Configuration", "Maintenance"],
     color: "indigo"
   },
   {
-    icon: Laptop,
-    title: "Laptop Repair",
-    price: "Starting AED 149",
-    description: "Expert laptop repair services with genuine parts and warranty. Quick turnaround time.",
-    features: ["Hardware Repair", "Software Issues", "Data Recovery", "30-Day Warranty"],
-    color: "red"
+    icon: Building2,
+    title: "IT Systems & Office Setup",
+    description: "Business-grade workstations, networks, and ongoing support—so your team stays productive.",
+    features: ["Office IT & Devices", "Wi‑Fi & Printers", "Upgrades & Optimisation", "Business Support"],
+    color: "slate"
   }
 ];
 
@@ -71,7 +65,25 @@ const colorClasses = {
   orange: "from-orange-500/20 to-orange-600/20 border-orange-500/30",
   green: "from-green-500/20 to-green-600/20 border-green-500/30",
   indigo: "from-indigo-500/20 to-indigo-600/20 border-indigo-500/30",
-  red: "from-red-500/20 to-red-600/20 border-red-500/30"
+  slate: "from-slate-500/20 to-slate-600/20 border-slate-500/30"
+};
+
+const iconAccent = {
+  blue: "text-blue-600",
+  purple: "text-purple-600",
+  orange: "text-orange-600",
+  green: "text-green-600",
+  indigo: "text-indigo-600",
+  slate: "text-slate-600",
+};
+
+const dotAccent = {
+  blue: "bg-blue-500",
+  purple: "bg-purple-500",
+  orange: "bg-orange-500",
+  green: "bg-green-500",
+  indigo: "bg-indigo-500",
+  slate: "bg-slate-500",
 };
 
 export default function ServicesSection() {
@@ -116,14 +128,11 @@ export default function ServicesSection() {
                 
                 <CardHeader className="text-center pb-4">
                   <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${colorClasses[service.color]} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className={`w-8 h-8 text-${service.color}-600`} />
+                    <Icon className={`w-8 h-8 ${iconAccent[service.color]}`} />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     {service.title}
                   </h3>
-                  <div className="text-2xl font-bold text-orange-600 mb-2">
-                    {service.price}
-                  </div>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
@@ -134,7 +143,7 @@ export default function ServicesSection() {
                   <ul className="space-y-2">
                     {service.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-center text-sm text-gray-700">
-                        <div className={`w-2 h-2 rounded-full bg-${service.color}-500 mr-3 flex-shrink-0`} />
+                        <div className={`w-2 h-2 rounded-full ${dotAccent[service.color]} mr-3 flex-shrink-0`} />
                         {feature}
                       </li>
                     ))}

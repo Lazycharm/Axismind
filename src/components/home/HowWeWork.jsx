@@ -49,11 +49,12 @@ const steps = [
 export default function HowWeWork() {
   return (
     <motion.section
+      id="how-we-work"
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, amount: 0.2 }}
       variants={staggerContainer}
-      className="py-28 bg-gray-900/60 relative"
+      className="py-28 bg-gray-900/60 relative scroll-mt-24"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,#8b5cf615,transparent_60%)]" />
       <div className="max-w-7xl mx-auto px-6 relative z-10">

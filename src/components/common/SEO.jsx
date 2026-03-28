@@ -98,7 +98,6 @@ export default function SEO({
         "longitude": "55.2708"
       },
       "areaServed": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Al Ain", "Ras Al Khaimah", "UAE"],
-      "priceRange": "AED 1,500 - AED 25,000+",
       "description": "Technology & Digital Growth Agency helping UAE businesses grow through web development, SEO, Google Ads, mobile apps, and AI-powered business automation.",
       "aggregateRating": {
         "@type": "AggregateRating",

@@ -12,6 +12,9 @@ create table if not exists "Portfolio" (
   project_url text,
   technologies text[] default '{}',
   featured boolean not null default false,
+  highlight_line1 text,
+  highlight_line2 text,
+  highlight_line3 text,
   created_at timestamptz not null default now()
 );
 

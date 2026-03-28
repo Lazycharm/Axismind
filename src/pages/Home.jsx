@@ -8,12 +8,16 @@ import { createPageUrl } from "@/utils";
 import SEO from "@/components/common/SEO";
 import { getPortfolioItems, getTestimonials } from '@/services/contentService';
 import TrustedBy from '@/components/home/TrustedBy';
+import PortfolioImageFrame from '@/components/portfolio/PortfolioImageFrame';
+import PortfolioHighlightStrip from '@/components/portfolio/PortfolioHighlightStrip';
 import ServicesOverview from '@/components/home/ServicesOverview';
 import HowWeWork from '@/components/home/HowWeWork';
 import IndustriesServed from '@/components/home/IndustriesServed';
 import PricingAnchors from '@/components/home/PricingAnchors';
 import FAQSection from '@/components/home/FAQSection';
 import CTASection from '@/components/home/CTASection';
+import GrowthAuditSection from '@/components/home/GrowthAuditSection';
+import { openWhatsApp, WHATSAPP_MESSAGES } from '@/utils';
 import {
   MessageCircle,
   Eye,
@@ -43,8 +47,8 @@ export default function Home() {
     loadFeatured();
   }, []);
 
-  const handleWhatsAppClick = () => {
-    window.open("https://wa.me/971569520569?text=Hello! I'd like a free consultation for my UAE business.", '_blank');
+  const scrollToHowWeWork = () => {
+    document.getElementById('how-we-work')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -145,33 +149,35 @@ export default function Home() {
                 <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     size="lg"
-                    onClick={handleWhatsAppClick}
+                    type="button"
+                    onClick={() => openWhatsApp(WHATSAPP_MESSAGES.heroLeads)}
                     className="bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white px-10 py-6 rounded-xl shadow-[0_0_40px_rgba(59,130,246,0.35)]"
                   >
                     <MessageCircle className="w-5 h-5 mr-2" />
-                    Book Free Growth Call
+                    Get More Leads 🚀
                   </Button>
                 </motion.div>
                 <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.98 }}>
-                  <Link to={createPageUrl('Portfolio')}>
-                    <Button size="lg" variant="outline" className="border-white/20 bg-white/[0.03] hover:bg-white/[0.08] text-white px-10 py-6 rounded-xl">
-                      <Eye className="w-5 h-5 mr-2" />
-                      Explore Case Studies
-                    </Button>
-                  </Link>
+                  <Button
+                    type="button"
+                    size="lg"
+                    variant="outline"
+                    onClick={scrollToHowWeWork}
+                    className="border-white/20 bg-white/[0.03] hover:bg-white/[0.08] text-white px-10 py-6 rounded-xl"
+                  >
+                    <Eye className="w-5 h-5 mr-2" />
+                    See How It Works
+                  </Button>
                 </motion.div>
               </motion.div>
             </div>
           </motion.div>
         </section>
 
-        {/* ─── TRUSTED BY ──────────────────────────────────── */}
+        {/* ─── TRUSTED ACROSS UAE ───────────────────────────── */}
         <TrustedBy />
 
-        {/* ─── SERVICES OVERVIEW ───────────────────────────── */}
-        <ServicesOverview />
-
-        {/* ─── FEATURED PORTFOLIO / CASE STUDIES ──────────── */}
+        {/* ─── CASE STUDIES (FEATURED PROJECTS) ───────────── */}
         {featuredPortfolio.length > 0 && (
           <motion.section
             initial="hidden"
@@ -191,17 +197,17 @@ export default function Home() {
                 {featuredPortfolio.map((project, i) => (
                   <motion.div key={project.id} variants={scaleIn} transition={{ delay: i * 0.08 }}>
                     <Card className="glass border-white/10 hover:border-amber-500/30 transition-all duration-500 hover:-translate-y-2 transform group overflow-hidden h-full">
-                      <CardContent className="p-0">
-                        {project.image_url ? (
-                          <div className="relative h-48 overflow-hidden">
-                            <img src={project.image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                          </div>
-                        ) : (
-                          <div className="h-48 bg-gradient-to-br from-blue-900/40 to-purple-900/40 flex items-center justify-center">
+                      <CardContent className="p-0 flex flex-col h-full">
+                        <PortfolioImageFrame
+                          src={project.image_url}
+                          alt={project.title}
+                          featured={project.featured}
+                          placeholder={
                             <span className="text-4xl font-bold text-white/20">{project.title?.charAt(0)}</span>
-                          </div>
-                        )}
+                          }
+                          roundedClassName="rounded-t-xl"
+                        />
+                        <PortfolioHighlightStrip project={project} compact />
                         <div className="p-6">
                           <h3 className="font-bold text-white text-lg mb-2 group-hover:text-amber-400 transition-colors">{project.title}</h3>
                           <p className="text-gray-400 text-sm line-clamp-2 mb-4">{project.description}</p>
@@ -229,13 +235,19 @@ export default function Home() {
           </motion.section>
         )}
 
+        {/* ─── FREE UAE BUSINESS GROWTH AUDIT ────────────── */}
+        <GrowthAuditSection />
+
+        {/* ─── OUR SOLUTIONS ─────────────────────────────────── */}
+        <ServicesOverview />
+
         {/* ─── HOW WE WORK ─────────────────────────────────── */}
         <HowWeWork />
 
         {/* ─── INDUSTRIES ──────────────────────────────────── */}
         <IndustriesServed />
 
-        {/* ─── PRICING ANCHORS ─────────────────────────────── */}
+        {/* ─── ENGAGEMENT / PACKAGE HIGHLIGHTS ───────────── */}
         <PricingAnchors />
 
         {/* ─── TESTIMONIALS ────────────────────────────────── */}

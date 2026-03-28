@@ -22,7 +22,7 @@ export default function Footer() {
     'Logo & Brand Identity',
     'Smart Home Setup',
     'Tech Installations',
-    'Laptop Repair Services'
+    'IT Systems & Office Setup'
   ];
 
   const quickLinks = [

@@ -10,6 +10,7 @@ import {
   Home as HomeIcon, Bot, Workflow, MessageCircle, ArrowRight
 } from 'lucide-react';
 import { fadeUp, scaleIn, staggerContainer } from "@/lib/motion";
+import { openWhatsApp, WHATSAPP_MESSAGES } from "@/utils";
 
 const serviceCategories = [
   {
@@ -25,9 +26,9 @@ const serviceCategories = [
       { icon: TrendingUp, name: "Google Ads", desc: "High-ROI paid campaigns" },
       { icon: Share2, name: "Social Media Marketing", desc: "Build & engage your audience" },
     ],
-    cta: "Explore Marketing →",
-    href: createPageUrl('Services'),
-    pricing: "From AED 1,500/month"
+    ctaLabel: "Rank My Business",
+    ctaKind: "whatsapp",
+    whatsappMessage: WHATSAPP_MESSAGES.marketing,
   },
   {
     badge: "Web & App Development",
@@ -42,9 +43,9 @@ const serviceCategories = [
       { icon: Smartphone, name: "Mobile Apps", desc: "iOS & Android apps" },
       { icon: ShoppingCart, name: "E-commerce", desc: "Online stores that sell" },
     ],
-    cta: "Explore Development →",
+    ctaLabel: "Build My Website",
+    ctaKind: "link",
     href: createPageUrl('Services'),
-    pricing: "From AED 2,500"
   },
   {
     badge: "Business Automation",
@@ -59,16 +60,14 @@ const serviceCategories = [
       { icon: Workflow, name: "Workflow Automation", desc: "Streamline operations" },
       { icon: HomeIcon, name: "Smart Home / Office", desc: "IoT & smart installations" },
     ],
-    cta: "Explore Automation →",
-    href: createPageUrl('Services'),
-    pricing: "Custom pricing"
+    ctaLabel: "Automate My Business",
+    ctaKind: "whatsapp",
+    whatsappMessage: WHATSAPP_MESSAGES.automation,
   },
 ];
 
 export default function ServicesOverview() {
-  const handleWhatsApp = () => {
-    window.open("https://wa.me/971569520569?text=Hello! I'd like to learn more about AxisMind's services.", '_blank');
-  };
+  const handleBottomCta = () => openWhatsApp(WHATSAPP_MESSAGES.audit);
 
   return (
     <motion.section
@@ -120,12 +119,30 @@ export default function ServicesOverview() {
                 </div>
 
                 <div className="border-t border-white/5 pt-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">{cat.pricing}</span>
-                    <Link to={cat.href} className={`text-xs font-medium ${cat.iconColor} hover:underline flex items-center gap-1`}>
-                      Learn more <ArrowRight className="w-3 h-3" />
+                  {cat.ctaKind === "link" ? (
+                    <Link to={cat.href} className="inline-flex w-full">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className={`w-full border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] hover:text-white text-xs font-semibold rounded-lg ${cat.iconColor}`}
+                      >
+                        {cat.ctaLabel}
+                        <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                      </Button>
                     </Link>
-                  </div>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openWhatsApp(cat.whatsappMessage)}
+                      className="w-full border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] hover:text-white text-xs font-semibold rounded-lg"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                      {cat.ctaLabel}
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -136,11 +153,12 @@ export default function ServicesOverview() {
         <motion.div variants={fadeUp} className="text-center">
           <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.98 }} className="inline-block">
             <Button
-              onClick={handleWhatsApp}
+              type="button"
+              onClick={handleBottomCta}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-4 rounded-xl font-semibold shadow-lg shadow-blue-500/20"
             >
               <MessageCircle className="w-5 h-5 mr-2" />
-              Get Free UAE Consultation
+              Get Free Audit
             </Button>
           </motion.div>
         </motion.div>

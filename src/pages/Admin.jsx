@@ -273,8 +273,30 @@ export default function Admin() {
   );
 }
 
+/** Only columns that exist on `Portfolio` — never send id, created_at, or client-only fields. */
+function buildPortfolioPayload(formData) {
+  return {
+    title: (formData.title ?? "").trim(),
+    description: (formData.description ?? "").trim(),
+    category: formData.category || "web_design",
+    image_url: formData.image_url?.trim() || null,
+    project_url: formData.project_url?.trim() || null,
+    technologies: Array.isArray(formData.technologies) ? formData.technologies : [],
+    featured: Boolean(formData.featured),
+    highlight_line1: formData.highlight_line1?.trim() || null,
+    highlight_line2: formData.highlight_line2?.trim() || null,
+    highlight_line3: formData.highlight_line3?.trim() || null,
+  };
+}
+
+function omitHighlightFields(payload) {
+  const { highlight_line1, highlight_line2, highlight_line3, ...rest } = payload;
+  return rest;
+}
+
 // Portfolio Manager Component
 function PortfolioManager({ items, onRefresh, isLoading, showForm, setShowForm, editingItem, setEditingItem }) {
+  const [portfolioSaveError, setPortfolioSaveError] = useState("");
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -282,13 +304,21 @@ function PortfolioManager({ items, onRefresh, isLoading, showForm, setShowForm, 
     image_url: '',
     project_url: '',
     technologies: [],
-    featured: false
+    featured: false,
+    highlight_line1: '',
+    highlight_line2: '',
+    highlight_line3: '',
   });
   const [techInput, setTechInput] = useState('');
 
   useEffect(() => {
     if (editingItem) {
-      setFormData(editingItem);
+      setFormData({
+        ...editingItem,
+        highlight_line1: editingItem.highlight_line1 ?? '',
+        highlight_line2: editingItem.highlight_line2 ?? '',
+        highlight_line3: editingItem.highlight_line3 ?? '',
+      });
       setShowForm(true);
     } else {
       resetForm();
@@ -303,25 +333,52 @@ function PortfolioManager({ items, onRefresh, isLoading, showForm, setShowForm, 
       image_url: '',
       project_url: '',
       technologies: [],
-      featured: false
+      featured: false,
+      highlight_line1: '',
+      highlight_line2: '',
+      highlight_line3: '',
     });
     setTechInput('');
+    setPortfolioSaveError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
+    setPortfolioSaveError("");
+    const fullPayload = buildPortfolioPayload(formData);
+    const save = async (payload) => {
       if (editingItem) {
-        await backend.entities.Portfolio.update(editingItem.id, formData);
+        await backend.entities.Portfolio.update(editingItem.id, payload);
       } else {
-        await backend.entities.Portfolio.create(formData);
+        await backend.entities.Portfolio.create(payload);
+      }
+    };
+    try {
+      try {
+        await save(fullPayload);
+      } catch (firstErr) {
+        const msg = String(firstErr?.message ?? firstErr ?? "");
+        const missingHighlight =
+          /highlight_line/i.test(msg) ||
+          (/column/i.test(msg) && (/does not exist/i.test(msg) || /schema cache/i.test(msg)));
+        if (missingHighlight) {
+          await save(omitHighlightFields(fullPayload));
+        } else {
+          throw firstErr;
+        }
       }
       resetForm();
       setShowForm(false);
       setEditingItem(null);
       onRefresh();
     } catch (error) {
-      console.error('Error saving portfolio item:', error);
+      console.error("Error saving portfolio item:", error);
+      const msg =
+        error?.message ||
+        error?.error_description ||
+        (typeof error === "string" ? error : null) ||
+        "Could not save project. Check your connection, admin role in the User table, and Supabase RLS policies.";
+      setPortfolioSaveError(msg);
     }
   };
 
@@ -358,6 +415,7 @@ function PortfolioManager({ items, onRefresh, isLoading, showForm, setShowForm, 
       {!showForm && (
         <Button
           onClick={() => {
+            setPortfolioSaveError("");
             setShowForm(true);
             setEditingItem(null);
             resetForm();
@@ -381,6 +439,7 @@ function PortfolioManager({ items, onRefresh, isLoading, showForm, setShowForm, 
                 variant="ghost"
                 size="sm"
                 onClick={() => {
+                  setPortfolioSaveError("");
                   setShowForm(false);
                   setEditingItem(null);
                   resetForm();
@@ -393,6 +452,14 @@ function PortfolioManager({ items, onRefresh, isLoading, showForm, setShowForm, 
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {portfolioSaveError ? (
+                <div
+                  role="alert"
+                  className="rounded-lg border border-red-500/50 bg-red-950/50 px-4 py-3 text-sm text-red-100"
+                >
+                  {portfolioSaveError}
+                </div>
+              ) : null}
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -442,11 +509,49 @@ function PortfolioManager({ items, onRefresh, isLoading, showForm, setShowForm, 
                 />
               </div>
 
+              <div className="rounded-xl border border-gray-600/80 bg-gray-800/50 p-4 space-y-4">
+                <p className="text-sm font-medium text-amber-400/90">Case study highlights (optional)</p>
+                <p className="text-xs text-gray-500">
+                  Shown under the project image. Leave blank to use strong defaults for this category. Example:{" "}
+                  <span className="text-gray-400">Education Platform • UAE Market</span> /{" "}
+                  <span className="text-gray-400">92% Employment Outcome Focus</span> /{" "}
+                  <span className="text-gray-400">Built for Lead Conversion</span>
+                </p>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1">Line 1 — Context &amp; market</label>
+                  <Input
+                    value={formData.highlight_line1}
+                    onChange={(e) => setFormData({ ...formData, highlight_line1: e.target.value })}
+                    placeholder="e.g. Education Platform • UAE Market"
+                    className="bg-gray-700 text-white border-gray-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1">Line 2 — Outcome / stat</label>
+                  <Input
+                    value={formData.highlight_line2}
+                    onChange={(e) => setFormData({ ...formData, highlight_line2: e.target.value })}
+                    placeholder="e.g. 92% Employment Outcome Focus"
+                    className="bg-gray-700 text-white border-gray-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1">Line 3 — Value proposition</label>
+                  <Input
+                    value={formData.highlight_line3}
+                    onChange={(e) => setFormData({ ...formData, highlight_line3: e.target.value })}
+                    placeholder="e.g. Built for Lead Conversion"
+                    className="bg-gray-700 text-white border-gray-600"
+                  />
+                </div>
+              </div>
+
               <div className="grid md:grid-cols-2 gap-6">
                 <ImageUpload
                   value={formData.image_url}
                   onChange={(url) => setFormData({ ...formData, image_url: url })}
                   label="Project Image"
+                  helperText="Recommended size: 1600 × 1200 px. Images are shown in full on the site (no cropping)—any aspect ratio works."
                 />
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">

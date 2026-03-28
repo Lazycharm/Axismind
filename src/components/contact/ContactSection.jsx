@@ -96,7 +96,7 @@ Message: ${formData.message}`;
     { value: 'branding', label: 'Logo & Brand Identity' },
     { value: 'smart_home', label: 'Smart Home Setup' },
     { value: 'tech_installation', label: 'Tech Installations' },
-    { value: 'laptop_repair', label: 'Laptop Repair' },
+    { value: 'it_systems_office', label: 'IT Systems & Office Setup' },
     { value: 'general_inquiry', label: 'General Inquiry' }
   ];
 

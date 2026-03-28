@@ -427,7 +427,7 @@ export default function Layout({ children, currentPageName }) {
                   "Business Automation UAE",
                   "AI Chatbots for Business",
                   "Smart Home Installation",
-                  "Laptop & Tech Repair",
+                  "IT Systems & Office Support",
                 ].map((s, i) => (
                   <li key={i}>
                     <Link to={createPageUrl('Services')} className="text-gray-400 hover:text-amber-400 transition-colors text-sm">

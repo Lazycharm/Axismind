@@ -11,8 +11,6 @@ const packages = [
     category: "Website Packages",
     badge: "Web Development",
     badgeColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-    startingFrom: "AED 2,500",
-    period: "one-time",
     highlight: false,
     features: [
       "Professional responsive design",
@@ -22,15 +20,13 @@ const packages = [
       "1 year free maintenance",
       "SSL & security setup"
     ],
-    cta: "Request Website Quote",
-    msg: "Hello! I'd like a quote for a website. Please share package details."
+    cta: "Choose This Plan",
+    msg: "Hello! I'm interested in your website package — let's get customers flowing in."
   },
   {
     category: "SEO & Marketing",
     badge: "Most Popular",
     badgeColor: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-    startingFrom: "AED 1,500",
-    period: "/month",
     highlight: true,
     features: [
       "Google UAE keyword targeting",
@@ -40,15 +36,13 @@ const packages = [
       "Content creation & publishing",
       "Local UAE SEO for 5 cities"
     ],
-    cta: "Start Marketing Strategy",
-    msg: "Hello! I'm interested in your SEO & digital marketing packages. What's included?"
+    cta: "Start Getting Customers",
+    msg: "Hello! I want SEO & marketing that brings in real leads — let's talk."
   },
   {
     category: "Business Automation",
     badge: "High Value",
     badgeColor: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-    startingFrom: "AED 3,000",
-    period: "setup",
     highlight: false,
     features: [
       "AI chatbot for your website",
@@ -58,8 +52,8 @@ const packages = [
       "Workflow automation",
       "30-day post-launch support"
     ],
-    cta: "Automate My Business",
-    msg: "Hello! I want to automate my business operations. Let's discuss automation packages."
+    cta: "Choose This Plan",
+    msg: "Hello! I want automation that saves time and captures more leads."
   },
 ];
 
@@ -79,15 +73,15 @@ export default function PricingAnchors() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#8b5cf610,transparent_70%)]" />
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <motion.div variants={fadeUp} className="text-center mb-16">
-          <Badge className="mb-4 bg-blue-500/20 text-blue-400 border-blue-500/30">Transparent Pricing</Badge>
+          <Badge className="mb-4 bg-blue-500/20 text-blue-400 border-blue-500/30">How We Engage</Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Investment Plans for
+            Clear scopes for
             <span className="block mt-2 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">
               Every UAE Business
             </span>
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            No hidden fees. No long contracts. Honest pricing for serious businesses.
+            Flexible engagement with straightforward proposals—tell us your goals and we&apos;ll map the right package.
           </p>
         </motion.div>
 
@@ -111,12 +105,7 @@ export default function PricingAnchors() {
               )}
               <CardContent className="p-6 md:p-8 flex flex-col flex-1">
                 <Badge className={`${pkg.badgeColor} mb-4 text-xs w-fit`}>{pkg.badge}</Badge>
-                <h3 className="text-lg md:text-xl font-bold text-white mb-2">{pkg.category}</h3>
-                <p className="text-xs text-gray-500 mb-1">Starting from</p>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-2xl md:text-3xl font-bold text-white">{pkg.startingFrom}</span>
-                  <span className="text-gray-400 text-sm">{pkg.period}</span>
-                </div>
+                <h3 className="text-lg md:text-xl font-bold text-white mb-6">{pkg.category}</h3>
 
                 <ul className="space-y-3 mb-8 flex-1">
                   {pkg.features.map((f, fi) => (
@@ -128,10 +117,11 @@ export default function PricingAnchors() {
                 </ul>
 
                 <Button
+                  type="button"
                   onClick={() => handleWhatsApp(pkg.msg)}
                   className={`w-full font-semibold py-3 rounded-xl transition-all duration-300 ${
                     pkg.highlight
-                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-lg shadow-cyan-500/20'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-lg shadow-cyan-500/20 ring-2 ring-cyan-400/30'
                       : 'bg-gray-700 hover:bg-gray-600 text-white'
                   }`}
                 >
@@ -145,12 +135,13 @@ export default function PricingAnchors() {
         </div>
 
         <motion.p variants={fadeUp} className="text-center text-gray-500 text-sm mt-8">
-          All prices are VAT-exclusive. Custom packages available for enterprises. 
+          Need a tailored or enterprise rollout?{" "}
           <button
+            type="button"
             onClick={() => handleWhatsApp("Hello! I need a custom enterprise package. Please share details.")}
-            className="text-blue-400 hover:underline ml-1"
+            className="text-blue-400 hover:underline"
           >
-            Contact us for enterprise pricing →
+            Message us on WhatsApp →
           </button>
         </motion.p>
       </div>

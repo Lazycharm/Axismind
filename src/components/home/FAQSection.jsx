@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { AnimatePresence, motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import { fadeUp, staggerContainer } from "@/lib/motion";
+import { openWhatsApp, WHATSAPP_MESSAGES } from "@/utils";
 
 const faqs = [
   {
-    q: "How much does website development cost in UAE?",
-    a: "Website development in UAE starts from AED 2,500 for a professional business website. E-commerce websites start from AED 4,500. The final cost depends on your requirements, number of pages, and features needed. We offer transparent pricing with no hidden fees."
+    q: "How do you scope website development projects in UAE?",
+    a: "Every project is scoped to your goals, pages, and features. We provide a clear written proposal before work begins—no surprise add-ons, and we explain what drives timeline and complexity."
   },
   {
     q: "How long does SEO take to show results in Dubai?",
@@ -27,7 +29,7 @@ const faqs = [
   },
   {
     q: "Can you build a mobile app for my UAE business?",
-    a: "Absolutely. We develop iOS and Android mobile apps for UAE businesses starting from AED 8,000. This includes custom UI/UX design, API integrations, push notifications, and App Store / Google Play submission. We've built apps for retail, healthcare, logistics, and hospitality sectors."
+    a: "Absolutely. We develop iOS and Android mobile apps for UAE businesses with custom UI/UX design, API integrations, push notifications, and App Store / Google Play submission. We've built apps for retail, healthcare, logistics, and hospitality sectors—ask us for a tailored scope."
   },
   {
     q: "How does your smart home installation service work in Dubai?",
@@ -98,6 +100,17 @@ export default function FAQSection() {
             </motion.div>
           ))}
         </div>
+
+        <motion.div variants={fadeUp} className="text-center mt-14">
+          <Button
+            type="button"
+            size="lg"
+            onClick={() => openWhatsApp(WHATSAPP_MESSAGES.audit)}
+            className="bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white px-8 py-6 rounded-xl font-semibold shadow-lg shadow-blue-500/20"
+          >
+            Still unsure? Let&apos;s fix your business
+          </Button>
+        </motion.div>
       </div>
     </motion.section>
   );

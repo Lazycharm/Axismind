@@ -99,12 +99,12 @@ export default function ContactPage() {
   ];
 
   const services = [
-    { value: 'web_design', label: 'Web Design & Development (AED 699)' },
-    { value: 'app_development', label: 'App Development (AED 2,999+)' },
-    { value: 'branding', label: 'Logo & Brand Identity (AED 499+)' },
-    { value: 'smart_home', label: 'Smart Home Setup (AED 1,299+)' },
-    { value: 'tech_installation', label: 'Tech Installations (AED 199+)' },
-    { value: 'laptop_repair', label: 'Laptop Repair (AED 149+)' },
+    { value: 'web_design', label: 'Web Design & Development' },
+    { value: 'app_development', label: 'App Development' },
+    { value: 'branding', label: 'Logo & Brand Identity' },
+    { value: 'smart_home', label: 'Smart Home Setup' },
+    { value: 'tech_installation', label: 'Tech Installations' },
+    { value: 'it_systems_office', label: 'IT Systems & Office Setup' },
     { value: 'general_inquiry', label: 'General Inquiry / Custom Solution' }
   ];
 

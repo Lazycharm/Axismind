@@ -3,13 +3,11 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Phone, Mail, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
+import { createPageUrl, openWhatsApp, WHATSAPP_MESSAGES } from '@/utils';
 import { fadeUp, staggerContainer } from "@/lib/motion";
 
 export default function CTASection() {
-  const handleWhatsApp = () => {
-    window.open("https://wa.me/971569520569?text=Hello! I'd like a free consultation for my business.", '_blank');
-  };
+  const handleWhatsApp = () => openWhatsApp(WHATSAPP_MESSAGES.audit);
 
   return (
     <motion.section
@@ -34,36 +32,38 @@ export default function CTASection() {
         </motion.div>
 
         <motion.h2 variants={fadeUp} className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-          Ready to Grow Your
+          Let&apos;s Grow Your Business
           <span className="block mt-1 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
-            UAE Business?
+            Starting Today
           </span>
         </motion.h2>
 
         <motion.p variants={fadeUp} className="text-xl text-white/80 mb-10 max-w-3xl mx-auto leading-relaxed">
-          Book a free 30-minute consultation with our UAE digital growth experts.
-          No commitment. No sales pressure. Just real strategy for your business.
+          Get a clear read on what&apos;s blocking leads—then we map the fastest fixes for your UAE market.
+          No fluff. No hard sell.
         </motion.p>
 
         <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
           <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.98 }}>
           <Button
+            type="button"
             size="lg"
             onClick={handleWhatsApp}
             className="bg-white hover:bg-gray-100 text-blue-700 px-10 py-6 text-lg font-bold rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300"
           >
             <MessageCircle className="w-5 h-5 mr-2" />
-            WhatsApp Our Experts
+            Get Free Audit Now
           </Button>
           </motion.div>
           <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.98 }}>
           <Link to={createPageUrl('Contact')} className="w-full sm:w-auto">
             <Button
+              type="button"
               size="lg"
               className="w-full sm:w-auto border-2 border-white/30 bg-white/[0.04] text-white hover:bg-white/[0.14] hover:text-white shadow-none px-10 py-6 text-lg font-semibold rounded-xl backdrop-blur-sm"
             >
               <Mail className="w-5 h-5 mr-2" />
-              Send Us a Message
+              Talk to Our Team
             </Button>
           </Link>
           </motion.div>
