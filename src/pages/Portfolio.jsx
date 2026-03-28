@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useDeferredValue } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { getPortfolioItems } from "@/services/contentService";
 import SEO from "@/components/common/SEO";
-import PortfolioImageFrame from "@/components/portfolio/PortfolioImageFrame";
-import PortfolioHighlightStrip from "@/components/portfolio/PortfolioHighlightStrip";
 import PortfolioLightbox from "@/components/portfolio/PortfolioLightbox";
+import PortfolioProjectCard from "@/components/portfolio/PortfolioProjectCard";
 import {
-  ExternalLink,
   Code,
   Palette,
   Smartphone,
@@ -20,7 +17,6 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { fadeUp, scaleIn, staggerContainer } from "@/lib/motion";
 
 const categoryIcons = {
   web_design: Code,
@@ -38,11 +34,20 @@ const categoryColors = {
 
 const URL_CTA_LABELS = ["View Case Study", "Explore Project", "See Project"];
 
+const categories = [
+  { value: "all", label: "All Projects", icon: Filter },
+  { value: "web_design", label: "Web Design", icon: Code },
+  { value: "app_development", label: "App Development", icon: Smartphone },
+  { value: "branding", label: "Branding", icon: Palette },
+  { value: "smart_home", label: "Smart Home", icon: Home },
+];
+
 export default function PortfolioPage() {
   const [projects, setProjects] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearch = useDeferredValue(searchQuery);
   const [lightbox, setLightbox] = useState(null);
 
   const openLightbox = useCallback((url, title) => {
@@ -53,43 +58,41 @@ export default function PortfolioPage() {
     if (!open) setLightbox(null);
   }, []);
 
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const loadProjects = async () => {
-    try {
-      const data = await getPortfolioItems();
-      setProjects(data);
-    } catch (error) {
-      console.error("Error loading projects:", error);
-    }
-    setIsLoading(false);
-  };
-
-  const categories = [
-    { value: "all", label: "All Projects", icon: Filter },
-    { value: "web_design", label: "Web Design", icon: Code },
-    { value: "app_development", label: "App Development", icon: Smartphone },
-    { value: "branding", label: "Branding", icon: Palette },
-    { value: "smart_home", label: "Smart Home", icon: Home },
-  ];
-
-  const filteredProjects = projects.filter((project) => {
-    const matchesCategory = selectedCategory === "all" || project.category === selectedCategory;
-    const matchesSearch =
-      searchQuery === "" ||
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (project.description || "").toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const handleWhatsAppInquiry = () => {
+  const handleWhatsAppInquiry = useCallback(() => {
     window.open(
       "https://wa.me/971569520569?text=Hi! I reviewed your case studies and want a similar outcome for my business. Can we discuss?",
       "_blank"
     );
-  };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getPortfolioItems();
+        if (!cancelled) setProjects(data);
+      } catch (error) {
+        console.error("Error loading projects:", error);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const filteredProjects = useMemo(() => {
+    const q = deferredSearch.trim().toLowerCase();
+    return projects.filter((project) => {
+      const matchesCategory = selectedCategory === "all" || project.category === selectedCategory;
+      const matchesSearch =
+        q === "" ||
+        project.title.toLowerCase().includes(q) ||
+        (project.description || "").toLowerCase().includes(q);
+      return matchesCategory && matchesSearch;
+    });
+  }, [projects, selectedCategory, deferredSearch]);
 
   if (isLoading) {
     return (
@@ -127,9 +130,11 @@ export default function PortfolioPage() {
         <section className="relative py-24 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <img
-              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=75"
               alt=""
               className="w-full h-full object-cover"
+              decoding="async"
+              fetchPriority="low"
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 to-gray-900" />
@@ -156,15 +161,16 @@ export default function PortfolioPage() {
 
         <section className="py-20">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="mb-12 sticky top-20 z-30 bg-gray-900/80 backdrop-blur-md py-4 rounded-xl border border-white/5">
+            <div className="mb-12 sticky top-20 z-30 bg-gray-900/90 backdrop-blur-sm py-4 rounded-xl border border-white/5">
               <div className="max-w-3xl mx-auto flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
                   <input
-                    type="text"
+                    type="search"
                     placeholder="Search by project name or outcome..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    autoComplete="off"
                     className="w-full pl-12 pr-4 py-3 border border-gray-700 bg-gray-800 text-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300"
                   />
                 </div>
@@ -174,9 +180,10 @@ export default function PortfolioPage() {
                     return (
                       <Button
                         key={category.value}
+                        type="button"
                         variant={selectedCategory === category.value ? "default" : "outline"}
                         onClick={() => setSelectedCategory(category.value)}
-                        className={`rounded-full px-4 py-2 text-sm transition-all duration-300 ${
+                        className={`rounded-full px-4 py-2 text-sm transition-colors duration-200 ${
                           selectedCategory === category.value
                             ? "bg-blue-600 text-white shadow-lg"
                             : "bg-gray-800 text-gray-200 border-gray-700 hover:bg-blue-900 hover:border-blue-600 hover:text-white"
@@ -193,118 +200,31 @@ export default function PortfolioPage() {
 
             {filteredProjects.length > 0 ? (
               <>
-                <motion.div
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.2 }}
-                  className="mb-8 text-center"
-                >
-                  <p className="text-gray-400">
-                    Showing {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""}
-                    {selectedCategory !== "all" &&
-                      ` in ${categories.find((c) => c.value === selectedCategory)?.label}`}
-                  </p>
-                </motion.div>
+                <p className="mb-8 text-center text-gray-400">
+                  Showing {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""}
+                  {selectedCategory !== "all" &&
+                    ` in ${categories.find((c) => c.value === selectedCategory)?.label}`}
+                </p>
 
-                <motion.div
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-                  variants={staggerContainer}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.08 }}
-                >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 [contain:layout]">
                   {filteredProjects.map((project, index) => {
                     const CategoryIcon = categoryIcons[project.category];
                     const urlCta = URL_CTA_LABELS[index % URL_CTA_LABELS.length];
-
                     return (
-                      <motion.div key={project.id} variants={scaleIn} className="h-full">
-                        <Card className="group h-full flex flex-col overflow-hidden border-gray-700 bg-gray-800 shadow-xl transition-all duration-500 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-2xl hover:shadow-amber-500/10">
-                          <CardContent className="p-0 flex flex-col flex-1">
-                            <PortfolioImageFrame
-                              src={project.image_url}
-                              alt={`${project.title} — AxisMind case study`}
-                              onMediaClick={
-                                project.image_url
-                                  ? () => openLightbox(project.image_url, project.title)
-                                  : undefined
-                              }
-                              priority={index < 3}
-                              featured={project.featured}
-                              placeholder={
-                                CategoryIcon ? (
-                                  <CategoryIcon className="h-12 w-12 text-blue-400/80" />
-                                ) : null
-                              }
-                            />
-
-                            <PortfolioHighlightStrip project={project} />
-
-                            <div className="flex flex-1 flex-col gap-4 p-6">
-                              <Badge className={`w-fit ${categoryColors[project.category]}`}>
-                                {CategoryIcon && <CategoryIcon className="mr-1 inline h-3 w-3" />}
-                                {String(project.category || "").replace("_", " ")}
-                              </Badge>
-
-                              <div className="flex-1 space-y-2">
-                                <h3 className="text-xl font-bold text-white transition-colors duration-300 group-hover:text-amber-400">
-                                  {project.title}
-                                </h3>
-                                <p className="line-clamp-3 text-sm leading-relaxed text-gray-400">
-                                  {project.description}
-                                </p>
-                              </div>
-
-                              {project.technologies && project.technologies.length > 0 && (
-                                <div className="flex flex-wrap gap-2">
-                                  {project.technologies.slice(0, 3).map((tech, techIndex) => (
-                                    <Badge
-                                      key={techIndex}
-                                      variant="outline"
-                                      className="border-gray-600 bg-gray-700 text-xs text-gray-300"
-                                    >
-                                      {tech}
-                                    </Badge>
-                                  ))}
-                                  {project.technologies.length > 3 && (
-                                    <Badge variant="outline" className="border-gray-600 bg-gray-700 text-xs text-gray-300">
-                                      +{project.technologies.length - 3} more
-                                    </Badge>
-                                  )}
-                                </div>
-                              )}
-
-                              <div className="mt-auto pt-2">
-                                {project.project_url ? (
-                                  <Button
-                                    size="sm"
-                                    type="button"
-                                    onClick={() => window.open(project.project_url, "_blank")}
-                                    className="w-full bg-blue-600 font-semibold text-white hover:bg-blue-700"
-                                  >
-                                    <ExternalLink className="mr-2 h-4 w-4" />
-                                    {urlCta}
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    size="sm"
-                                    type="button"
-                                    onClick={handleWhatsAppInquiry}
-                                    className="w-full bg-green-600 font-semibold text-white hover:bg-green-700"
-                                  >
-                                    <MessageCircle className="mr-2 h-4 w-4" />
-                                    Discuss This Project
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
+                      <div key={project.id} className="h-full min-h-0">
+                        <PortfolioProjectCard
+                          project={project}
+                          urlCta={urlCta}
+                          categoryIcon={CategoryIcon}
+                          categoryClass={categoryColors[project.category] || categoryColors.web_design}
+                          onOpenLightbox={openLightbox}
+                          onWhatsApp={handleWhatsAppInquiry}
+                          eagerImage={index < 6}
+                        />
+                      </div>
                     );
                   })}
-                </motion.div>
+                </div>
               </>
             ) : (
               <div className="py-20 text-center">
